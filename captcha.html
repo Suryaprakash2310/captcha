@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delay Pattern CAPTCHA</title>
+    <style>
+        .checkbox-container {
+            display: flex;
+            justify-content: space-between;
+            width: 200px;
+            margin: 20px auto;
+        }
+        .checkbox-container label {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form id="captcha-form" onsubmit="return validateCaptcha()">
+        <div class="checkbox-container">
+            <label><input type="checkbox" id="checkbox1"> Box 1</label>
+            <label><input type="checkbox" id="checkbox2"> Box 2</label>
+            <label><input type="checkbox" id="checkbox3"> Box 3</label>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        let clickTimes = [];
+        
+        document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+            checkbox.addEventListener('click', () => {
+                let now = new Date().getTime();
+                clickTimes[index] = now;
+            });
+        });
+
+        function validateCaptcha() {
+            // Analyze the time intervals between clicks
+            let timeIntervals = [];
+            for (let i = 1; i < clickTimes.length; i++) {
+                timeIntervals.push(clickTimes[i] - clickTimes[i-1]);
+            }
+
+            let suspicious = timeIntervals.some((interval, i, arr) => {
+                return interval < 100 && interval === arr[i];
+            });
+
+            if (suspicious) {
+                alert("You may be a robot. Please try again.");
+                return false;
+            }
+
+            alert("CAPTCHA passed. Form submitted successfully.");
+            return true;
+        }
+    </script>
+</body>
+</html>
